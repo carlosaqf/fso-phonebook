@@ -1,16 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Finder from './Components/Finder'
 import Display from './Components/Display'
 import AddPerson from './Components/AddPerson'
+import axios from 'axios'
 
 const App = () => {
 
-  const [persons, setPersons] = useState([
-    { name: 'Carlos Fegurgur' , number: '(671) 483-2699' },
-    { name: 'Antonio Quan', number: '(805) 215-2118' },
-    { name: 'Dan Abramov', number: '(124) 323-4345' },
-    { name: 'Mary Poppendieck', number: '(392) 642-3122' }
-  ])
+  const [persons, setPersons] = useState([])
+  // { name: 'Carlos Fegurgur' , number: '(671) 483-2699' },
+  // { name: 'Antonio Quan', number: '(805) 215-2118' },
+  // { name: 'Dan Abramov', number: '(124) 323-4345' },
+  // { name: 'Mary Poppendieck', number: '(392) 642-3122' }
+  
+  useEffect(() => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('This is the response', response)
+        console.log('This is the data', response.data)
+        setPersons(response.data)
+      })
+  }, [])
 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
