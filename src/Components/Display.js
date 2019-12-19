@@ -1,8 +1,19 @@
 import React from 'react';
 
-const Display = ({ persons }) => {
+const Display = ({ persons, handleDelete }) => {
   return(
-    persons.map((person, i) => <li key={i}>{person.name}: {person.number}</li>)
+    <div>
+      <ul>
+        {console.log('this is the current persons', persons)}
+        {persons
+          .map(person => (
+            <li key={person.name}>
+              {person.name} {person.number}
+              <button onClick={() => handleDelete(person.id)}>Delete</button>
+            </li>
+          ))}
+      </ul>
+    </div>
   )
 }
 

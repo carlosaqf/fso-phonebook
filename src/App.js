@@ -3,6 +3,8 @@ import Finder from './Components/Finder'
 import Display from './Components/Display'
 import AddPerson from './Components/AddPerson'
 import axios from 'axios'
+import personService from './services/persons'
+import { format } from 'url';
 
 const App = () => {
 
@@ -13,12 +15,11 @@ const App = () => {
   // { name: 'Mary Poppendieck', number: '(392) 642-3122' }
   
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('This is the response', response)
-        console.log('This is the data', response.data)
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        console.log('This is the response', initialPersons)
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -51,7 +52,17 @@ const App = () => {
       alert('Please enter a number')
     }else{
       console.log(formatNumber(newNumber))
-      setPersons([...persons, { name: newName, number: formatNumber(newNumber)}])
+
+      personService
+        .create({
+          name: newName,
+          number: formatNumber(newNumber)
+        })
+        .then(returnedPerson =>{
+          setPersons(persons.concat(returnedPerson))
+        })
+
+      //setPersons([...persons, { name: newName, number: formatNumber(newNumber)}])
       setNewName('')
       setNewNumber('')
       alert('Submit Completed')
@@ -89,6 +100,16 @@ const App = () => {
   //   const results = persons.filter(person => person.name.toLowerCase().includes(searchTerm.toLowerCase()))
   //   setSearchResults(results)
   // }, [searchTerm, persons])
+
+  const handleDelete = (id, e) => {
+    console.log('This is the persons before delete', persons)
+    personService
+      .remove(id)
+      .then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+        console.log('This is the persons after delete', persons)
+      })
+  }
 
   return(
     <div>
@@ -147,7 +168,8 @@ const App = () => {
 
       <h2>Numbers</h2>
         <ul>
-          <Display persons={persons} />
+          {console.log('This is persons being passed to display', persons)}
+          <Display persons={persons} handleDelete={handleDelete} />
         </ul>
 
     </div>
